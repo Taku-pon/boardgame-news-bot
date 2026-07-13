@@ -2,13 +2,6 @@
 boardgame-news-bot
 海外ボードゲームニュースを取得し、Claude APIで日本語に要約翻訳して
 Xに自動投稿するスクリプト。
-
-必要な環境変数(GitHub Actions Secretsで設定):
-  ANTHROPIC_API_KEY
-  X_API_KEY
-  X_API_KEY_SECRET
-  X_ACCESS_TOKEN
-  X_ACCESS_TOKEN_SECRET
 """
 
 import os
@@ -18,8 +11,6 @@ import feedparser
 import requests
 from requests_oauthlib import OAuth1
 
-# ==== 設定 ====
-
 FEEDS = [
     {"name": "BoardGameGeek News", "url": "https://boardgamegeek.com/rss/blog/1"},
     {"name": "Meeple Mountain", "url": "https://www.meeplemountain.com/feed/"},
@@ -28,7 +19,7 @@ FEEDS = [
     {"name": "EverythingBoardGames", "url": "https://www.everythingboardgames.com/feeds/posts/default?alt=rss"},
 ]
 
-MAX_POSTS_PER_RUN = 4  # 1回の実行で投稿する最大件数(安全弁)
+MAX_POSTS_PER_RUN = 4
 SEEN_FILE = "seen_ids.json"
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
@@ -76,7 +67,6 @@ def fetch_new_entries(seen):
 
 
 def summarize_ja(entry):
-    """Claude APIで日本語要約ツイート文を生成する"""
     system_prompt = (
         "あなたはボードゲームニュースを紹介するXアカウントの編集者です。"
         "与えられた英語記事のタイトルと概要をもとに、日本語のツイート文を作成してください。"
@@ -150,7 +140,7 @@ def main():
             if success:
                 seen.add(entry["id"])
                 posted_count += 1
-                time.sleep(5)  # 連続投稿の間隔をあける
+                time.sleep(5)
         except Exception as e:
             print(f"[ERROR] {entry['title']} の処理中にエラー: {e}")
 
