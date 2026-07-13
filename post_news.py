@@ -98,8 +98,11 @@ def summarize_ja(entry):
         },
         timeout=30,
     )
-    resp.raise_for_status()
-    data = resp.json()
+        if resp.status_code >= 300:
+        print(f"[DEBUG] Anthropic APIエラー詳細: {resp.status_code} {resp.text}")
+        resp.raise_for_status()
+        data = resp.json()
+
     text = "".join(b["text"] for b in data["content"] if b["type"] == "text").strip()
     return text
 
